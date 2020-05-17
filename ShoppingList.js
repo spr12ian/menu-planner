@@ -87,11 +87,6 @@ class ShoppingList {
     return abbreviation + ' not found in Quantity Types';
   }
 
-  getWeekToShopFor() { //console.log("ShoppingList.getWeekToShopFor");
-    const weekToShopFor = this.weekToShopFor || this.getDefaultWeekToShopFor(); //console.log("weekToShopFor: [%s]", weekToShopFor);
-    return weekToShopFor;
-  }
-
   howManyIngredients() { //console.log('ShoppingList.howManyIngredients');
     const IngredientsToBuy = this.sheet.getRange("E1:E").getValues(); //console.log('IngredientsToBuy: [%s]', IngredientsToBuy);
     const howManyIngredients = IngredientsToBuy.filter(String).length; //console.log('howManyIngredients: [%s]', howManyIngredients);

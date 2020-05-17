@@ -26,6 +26,7 @@ function getGASMenu() {
 function allSteps() {
   goToTodaysMenu();
   checkLinks();
+  generateDailyMenus();
   getMealsToShopFor();
   updateShoppingList();
   emailShoppingList();
@@ -85,11 +86,11 @@ function emailShoppingList() {
 }
 
 function generateDailyMenus() {  
-  let mySpreadsheet = new MySpreadsheet();
-  let menuRota = new MenuRota(mySpreadsheet);
-  let rotaOutput = new RotaOutput(mySpreadsheet);
+  const mySpreadsheet = new MySpreadsheet();
+  const menuRota = new MenuRota(mySpreadsheet);
+  const dailyMenus = new DailyMenus(mySpreadsheet);
   
-  rotaOutput.setValues(menuRota.getOutput());
+  dailyMenus.setValues(menuRota.getOutput());
 }
 
 function goToTodaysMenu() {

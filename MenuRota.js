@@ -7,6 +7,14 @@ class MenuRota {
     return this.getSheet().getDataRange().getValues();
   }
 
+  getDataValuesNoHeader() {
+    const dataRangeValues = this.getDataRangeValues();
+    // Get rid of the header
+    dataRangeValues.shift();
+    
+    return dataRangeValues;
+  }
+  
   getDefaultSheetName() { //console.log("MenuRota.getDefaultSheetName");
     const defaultSheetName = "Menu Rota"; //console.log("defaultSheetName: [%s]", defaultSheetName);
     return defaultSheetName;
@@ -152,12 +160,8 @@ class MenuRota {
       return nextIterator;
     }
     
-    const dataRangeValues = this.getDataRangeValues();
-    // Get rid of the header
-    dataRangeValues.shift();
-    
     const days = makeDaysIterator();
-    const meals = makeMealsIterator(dataRangeValues);
+    const meals = makeMealsIterator(this.getDataValuesNoHeader());
     
     const output = [];
     

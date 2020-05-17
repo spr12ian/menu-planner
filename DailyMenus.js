@@ -120,4 +120,13 @@ class DailyMenus {
       }
     }
   }
+  
+  setValues(values) {;
+    const startRow = 1;
+    const startColumn = 1;
+    const howManyRows = values.length;
+    const howManyColumns = values[0].length;
+
+    this.getSheet().getRange(startRow, startColumn, howManyRows, howManyColumns).setValues(values);
+  }
 }

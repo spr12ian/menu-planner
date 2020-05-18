@@ -1,0 +1,25 @@
+{
+  "author": "Ian Sweeney",
+  "bugs": {
+    "url": "https://github.com/spr12ian/menu-planner/issues"
+  },
+  "description": "Menu Planner",
+  "devDependencies": {
+    "@google/clasp": "^2.3.0"
+  },
+  "homepage": "https://github.com/spr12ian/menu-planner#readme",
+  "keywords": [],
+  "license": "ISC",
+  "main": "GASMenu.js",
+  "name": "menu-planner",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spr12ian/menu-planner.git"
+  },
+  "scripts": {
+    "clasp": "npx clasp push",
+    "create": "npx clasp create menu-planner",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}

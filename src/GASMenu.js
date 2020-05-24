@@ -2,6 +2,7 @@ function getGASMenu() {
   const itemArray = [
     ['All Steps', 'allSteps'],
     ['Check Links', 'checkLinks'],
+    ['Check Recipes', 'checkRecipes'],
     ['Generate Daily Menus', 'generateDailyMenus'],
     ['Get Meals To Shop For', 'getMealsToShopFor'],
     ['Update Shopping List', 'updateShoppingList'],
@@ -24,12 +25,13 @@ function getGASMenu() {
 }
 
 function allSteps() {
-  goToTodaysMenu();
   checkLinks();
+  checkRecipes();
   generateDailyMenus();
   getMealsToShopFor();
   updateShoppingList();
   emailShoppingList();
+  goToTodaysMenu();
 }
 
 function checkLinks() {
@@ -40,6 +42,13 @@ function checkLinks() {
   linkChecker.getToastMessages().forEach(function(item) {
     mySpreadsheet.toast(item.msg, item.title, item.timeoutSeconds);
   });
+}
+
+function checkRecipes() {
+  const mySpreadsheet = new MySpreadsheet();
+  let meals = new Meals(mySpreadsheet);
+  let recipes = new Recipes(mySpreadsheet);
+  recipes.checkRecipes(meals.getAllMeals().map(mealRow => mealRow[0]));
 }
 
 function emailShoppingList() {

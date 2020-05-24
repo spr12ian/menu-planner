@@ -6,8 +6,8 @@ class MySpreadsheet {
   createMenu() { //console.log("MySpreadsheet.createMenu");
     const gasMenu = getGASMenu();
   
-    var ui = SpreadsheetApp.getUi();
-    var menu = ui.createMenu(gasMenu.menu);
+    const ui = SpreadsheetApp.getUi();
+    const menu = ui.createMenu(gasMenu.menu);
   
     gasMenu.items.forEach(function(item) {
       menu.addItem(item.caption, item.functionName);
@@ -30,7 +30,7 @@ class MySpreadsheet {
   }
 
   getDailyMenus() { //console.log("MySpreadsheet.getDailyMenus");
-    var dailyMenus = this.dailyMenus || new DailyMenus(this); //console.log(dailyMenus);
+    const dailyMenus = this.dailyMenus || new DailyMenus(this); //console.log(dailyMenus);
     return dailyMenus;
   }
 
@@ -69,11 +69,10 @@ class MySpreadsheet {
   }
 
   getServingsToShopFor() { //console.log("MySpreadsheet.getServingsToShopFor");
-    var mealIndex;
     const mealsToShopFor = this.getMealsToShopFor();
-    var servingsPerMeal;
-    var servingsToShopFor = [];
-    for (mealIndex in mealsToShopFor) {
+    let servingsPerMeal;
+    const servingsToShopFor = [];
+    for (const mealIndex in mealsToShopFor) {
       //console.log(mealIndex);
       //console.log(mealsToShopFor[mealIndex]);
       servingsPerMeal = this.getMeals().getServingsPerMeal(mealsToShopFor[mealIndex]); //console.log(servingsPerMeal);
@@ -108,8 +107,8 @@ class MySpreadsheet {
     //console.log('self: [%s]', self);
     //console.log('self.indexOf('+value+'): [%s]', self.indexOf(value));
     //console.log('self.indexOf('+value+')[0]: [%s]', self.indexOf(value)[0]);
-    var posArr = self.map(function(e) { return e[0]; }); //console.log('posArr: [%s]', posArr);
-    var pos = posArr.indexOf(value[0]); //console.log('pos: [%s]', pos);
+    const posArr = self.map(function(e) { return e[0]; }); //console.log('posArr: [%s]', posArr);
+    const pos = posArr.indexOf(value[0]); //console.log('pos: [%s]', pos);
     const onlyUnique = (pos === index);
     //console.log('onlyUnique: [%s]', onlyUnique);
     //throw new Error("onlyUnique");

@@ -1,6 +1,6 @@
 function onOpen() {
-  var mySpreadsheet = new MySpreadsheet();
-  var dailyMenus = new DailyMenus(mySpreadsheet);
+  const mySpreadsheet = new MySpreadsheet();
+  const dailyMenus = new DailyMenus(mySpreadsheet);
   mySpreadsheet.toast("Please wait while I do a few tasks", "Please wait!", 500);
   mySpreadsheet.createMenu();
   dailyMenus.goToTodaysMenu();

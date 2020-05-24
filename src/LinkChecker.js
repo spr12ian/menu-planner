@@ -1,12 +1,12 @@
 class LinkChecker{
   checkLinks(links) { //console.log("LinkChecker.checkLinks");
-    var msg;
-    var title;
-    var failedLinks = [];
-    var goodLinks = [];
+    let msg;
+    let title;
+    const failedLinks = [];
+    const goodLinks = [];
     links.forEach(function(link) {
-      var fetch = this.fetch(link);
-      var statusCode = fetch.getResponseCode();
+      const fetch = this.fetch(link);
+      const statusCode = fetch.getResponseCode();
       if (statusCode === 200) {
         goodLinks.push([link, statusCode]);
       } else {
@@ -78,7 +78,7 @@ class LinkChecker{
   }
 
   toast(msg, title, timeoutSeconds) {
-    var item = {
+    const item = {
       'msg': msg, 
       'title': title, 
       'timeoutSeconds': timeoutSeconds

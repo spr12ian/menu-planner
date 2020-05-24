@@ -34,8 +34,8 @@ class MealsToShopFor {
     const mealsToShopFor = this.mySpreadsheet.getMealsToShopFor();
     mealsToShopFor.sort();
 
-    var previousMeal = "";
-    var reducedMeals = [];
+    let previousMeal = "";
+    const reducedMeals = [];
     mealsToShopFor.forEach(function(meal) {
       if (meal === previousMeal) {
         if (endsWith(meal, "(2 meals)")) {

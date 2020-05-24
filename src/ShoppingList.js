@@ -222,7 +222,7 @@ class ShoppingList {
 
   updateRecipeQuantities() { //console.log("ShoppingList.updateRecipes");
     for (const typeListIndex in this.quantityTypeList) {
-      for (var recipeIndex in this.recipesValues) {
+      for (const recipeIndex in this.recipesValues) {
         if (this.recipesValues[recipeIndex][3] === this.quantityTypeList[typeListIndex][0]) {
           this.recipesValues[recipeIndex][2] *= this.quantityTypeList[typeListIndex][3];
           this.recipesValues[recipeIndex][3] = this.quantityTypeList[typeListIndex][2];

@@ -110,7 +110,7 @@ class DailyMenus {
 
     //console.log("fullDateRange.length: [%s]", fullDateRange.length);
 
-    for(var i = 0; i<fullDateRange.length;i++){
+    for(let i = 0; i<fullDateRange.length;i++){
       //console.log("fullDateRange[i]: [%s]", fullDateRange[i]);
       //console.log(fullDateRange[i][startDateColumn]);
       //console.log(fullDateRange[i][startDateColumn].toDateString());

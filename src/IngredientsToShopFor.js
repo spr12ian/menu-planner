@@ -9,7 +9,7 @@ class IngredientsToShopFor {
   }
 
   getIngredients() {
-    var ingredients = this.getSheet().getDataRange().getValues();
+    const ingredients = this.getSheet().getDataRange().getValues();
     ingredients.shift();
     ingredients.shift();
     return ingredients;

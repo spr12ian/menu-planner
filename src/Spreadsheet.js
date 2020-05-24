@@ -4,5 +4,5 @@ function getActiveSpreadsheet() { console.log("getActiveSpreadsheet");
 }
 
 function testSpreadsheetFunctions() { console.log("testSpreadsheet");
-  var activeSpreadsheet = getActiveSpreadsheet(); console.log(activeSpreadsheet);
+  const activeSpreadsheet = getActiveSpreadsheet(); console.log(activeSpreadsheet);
 }

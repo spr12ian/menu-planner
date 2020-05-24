@@ -1,7 +1,5 @@
-function MyUtilities() {
-  
-}
-
-MyUtilities.prototype.formatDate = function(date, timeZone, format) {
-  return Utilities.formatDate(date, timeZone, format);
+class MyUtilities {
+  formatDate(date, timeZone, format) {
+    return Utilities.formatDate(date, timeZone, format);
+  }
 }

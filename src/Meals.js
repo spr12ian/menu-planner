@@ -40,10 +40,9 @@ class Meals {
 
 getServingsPerMeal(meal) { //console.log("Meals.getServingsPerMeal");
   //console.log("Meals.getServingsPerMeal: meal: [%s]", meal);
-  var mealIndex;
   const allMeals = this.allMeals; //console.log("allMeals %s", allMeals);
-  var servingsPerMeal;
-  for (mealIndex in allMeals) {
+  let servingsPerMeal;
+  for (const mealIndex in allMeals) {
     //console.log(mealIndex);
     //console.log(allMeals[mealIndex]);
     //console.log(allMeals[mealIndex][0]);

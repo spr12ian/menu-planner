@@ -7,7 +7,7 @@ class Recipes {
     const dataRangeValues = this.getDataRangeValues();
     //console.log(dataRangeValues);
     const recipeNames = dataRangeValues.map(row => row[0]);
-    console.log(recipeNames);
+    //console.log(recipeNames);
     const uniqueRecipeNames = new Set(recipeNames);
     meals.forEach(meal => {
       if (!uniqueRecipeNames.has(meal)) {

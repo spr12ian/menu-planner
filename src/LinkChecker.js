@@ -31,11 +31,11 @@ class LinkChecker{
     return this.getMyUrlFetch().fetch(url);
   }
 
-  getDefaultMyUrlFetch() { console.log("LinkChecker.getDefaultMyUrlFetch");
+  getDefaultMyUrlFetch() { //console.log("LinkChecker.getDefaultMyUrlFetch");
     return new MyUrlFetch();
   }
 
-  getDefaultToastMessages() { console.log("LinkChecker.getDefaultToastMessages");
+  getDefaultToastMessages() { //console.log("LinkChecker.getDefaultToastMessages");
     return [];
   }
 
@@ -53,7 +53,7 @@ class LinkChecker{
     return statusCode;
   }
 
-  getToastMessages() { console.log("LinkChecker.getToastMessages");
+  getToastMessages() { //console.log("LinkChecker.getToastMessages");
     if (typeof this.toastMessages === "undefined") {
       return this.setDefaultToastMessages();
     } else {
@@ -61,17 +61,17 @@ class LinkChecker{
     }
   }
 
-  setDefaultToastMessages() { console.log("LinkChecker.setDefaultToastMessages");
+  setDefaultToastMessages() { //console.log("LinkChecker.setDefaultToastMessages");
     return this.setToastMessages(this.getDefaultToastMessages());
   }
 
-  setToastMessages(toastMessages) { console.log("LinkChecker.setToastMessages toastMessages: %s", toastMessages);
+  setToastMessages(toastMessages) { //console.log("LinkChecker.setToastMessages toastMessages: %s", toastMessages);
     this.validatetoastMessages(toastMessages);
     this.toastMessages = toastMessages;
     return toastMessages;
   }
 
-  validatetoastMessages(toastMessages) { console.log("LinkChecker.validatetoastMessages toastMessages: %s", toastMessages);
+  validatetoastMessages(toastMessages) { //console.log("LinkChecker.validatetoastMessages toastMessages: %s", toastMessages);
     if (typeof toastMessages === "undefined") {
       throw new RangeError("toastMessages is undefined");
     }
@@ -86,7 +86,7 @@ class LinkChecker{
     this.getToastMessages().push(item);
   }
 
-  setDefaultMyUrlFetch() { console.log("LinkChecker.setDefaultMyUrlFetch");
+  setDefaultMyUrlFetch() { //console.log("LinkChecker.setDefaultMyUrlFetch");
     return this.setMyUrlFetch(this.getDefaultMyUrlFetch());
   }
 

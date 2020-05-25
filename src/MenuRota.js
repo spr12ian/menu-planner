@@ -45,7 +45,7 @@ class MenuRota {
         daysArray.push(dtf.format(date));
         date.setDate(date.getDate() + 1);
       }
-      console.log(daysArray);
+      //console.log(daysArray);
       return daysArray;
     }
     

@@ -39,7 +39,7 @@ class MenuRota {
     function getDaysArray() {
       const date = getFirstDateOfYear();
       const options = { weekday: 'long'};
-      const dtf = new Intl.DateTimeFormat('en-US', options);
+      const dtf = new Intl.DateTimeFormat('en-GB', options);
       const daysArray = [];
       for (let i = 0; i < 7; i++) {
         daysArray.push(dtf.format(date));

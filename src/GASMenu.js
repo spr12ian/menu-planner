@@ -140,7 +140,7 @@ function updateShoppingList() {
   let shoppingList = new ShoppingList(mySpreadsheet);
   
   let reducedMeals = mealsToShopFor.getMealsToShopFor();
-  let recipeList = recipes.getRecipes();
+  let recipeList = recipes.getRecipesList();
   let shopFor = [];
   
   reducedMeals.forEach(function(meal) {

@@ -34,9 +34,35 @@ class Recipes {
     const defaultSheetName = "Recipes"; //console.log("defaultSheetName: [%s]", defaultSheetName);
     return defaultSheetName;
   }
+  
+  getIngredients(meal) {
+    const recipeIngredients = [];
+    
+    this.getRecipesList().forEach(recipeItem => {
+      if (meal === recipeItem[0]) {
+        let ingredient = {};
+        ingredient.ingredientName = recipeItem[1];
+        ingredient.quantity = recipeItem[2];
+        ingredient.quantityType = recipeItem[3];
+        recipeIngredients.push(ingredient);
+      }
+    });
+    
+    return recipeIngredients;
+  }
 
-  getRecipes() {
-    return this.getSheet().getDataRange().getValues();
+  getRecipesList() {
+    const typeofThisRecipesList = typeof this.recipesList; //console.log("typeofThisRecipesList %s", typeofThisRecipesList);
+    let recipesList;
+    if (typeofThisRecipesList === 'undefined') { //console.log("typeofThisRecipesList === 'undefined'");
+      recipesList = this.getSheet().getDataRange().getValues();
+      recipesList.shift();
+      this.recipesList = recipesList;
+    } else {
+      recipesList = this.recipesList;
+    }
+    
+    return recipesList;
   }
 
   getSheet() { //console.log("Recipes.getSheet");  

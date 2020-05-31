@@ -1,51 +1,55 @@
 class DateChange {
   // Called by function onDateChange which is triggered daily
   executeDateChangeEvents() {
-    this.updateMealsToShopFor();
-    this.updateShoppingList();
     this.emailTodaysMenu();
   }
 
   emailTodaysMenu() {
     const mySpreadsheet = new MySpreadsheet();
-    const shoppingList = new ShoppingList(mySpreadsheet);
-    const ingredientsToShopFor = new IngredientsToShopFor(mySpreadsheet);
-    const shopForRecipes = shoppingList.getShopForRecipes();
-    const ingredients = ingredientsToShopFor.getIngredients();
+    const dailyMenus = new DailyMenus(mySpreadsheet);
+    const recipes = new Recipes(mySpreadsheet);
+    const todaysMeals = dailyMenus.getTodaysMeals();
+    
     let emailBody = "Meals\n";
     let previousRecipe = "";
-    let menuItems = [];  
-  
-    shopForRecipes.forEach(function(recipeItem) {
-      if (previousRecipe !== recipeItem[0]) {
-        menuItems = [];
-        emailBody += "\n";
-        previousRecipe = recipeItem[0];
-        emailBody += recipeItem[0];
-        emailBody += "\n";
-        emailBody += "\n";
-      }
-      if (menuItems.indexOf(recipeItem[1]) < 0) {
-        menuItems.push(recipeItem[1])
-        emailBody += recipeItem[1];
-        emailBody += " [" + recipeItem[2];
-        if (recipeItem[3].length) {
-          emailBody += " " + recipeItem[3];
-        }
-        emailBody += "]\n";
-      }
+    let menuItems = [];
+    
+    Object.keys(todaysMeals).forEach(meal => {
+      emailBody += "\n";
+      emailBody += meal;
+      emailBody += ": ";
+      emailBody += todaysMeals[meal];
     });
-    GmailApp.sendEmail("hope.survives@gmail.com", "Today's Menu", emailBody)
+    
+    emailBody += "\n";
+    emailBody += "\n";
+    
+    Object.keys(todaysMeals).forEach(meal => {
+      emailBody += "\n";
+      emailBody += todaysMeals[meal];
+      emailBody += " ingredients:";
+      emailBody += "\n";
+      const ingredients = recipes.getIngredients(todaysMeals[meal]);
+      ingredients.forEach(ingredient => {
+        emailBody += "\t";
+        emailBody += ingredient.quantity;
+        emailBody += " ";
+        emailBody += ingredient.quantityType;
+        emailBody += " ";
+        emailBody += ingredient.ingredientName;
+        emailBody += "\n";
+      });
+    });
+    
+    GmailApp.sendEmail("hope.survives@gmail.com,ianbernard66@gmail.com", "Today's Menu ("+this.getToday()+")", emailBody)
   }
   
-  updateMealsToShopFor() {
-    const daysToShopFor = 1;
-    const mySpreadsheet = new MySpreadsheet();
-    const mealsToShopFor = new MealsToShopFor(mySpreadsheet);
-  
-    mealsToShopFor.updateMealsToShopFor(daysToShopFor);
-  }
-  
-  updateShoppingList() {
+  getToday() {
+      const date = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dtf = new Intl.DateTimeFormat('en-GB', options);
+      const today = dtf.format(date);
+      
+      return today;
   }
 }

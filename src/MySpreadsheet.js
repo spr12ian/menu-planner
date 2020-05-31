@@ -95,11 +95,6 @@ class MySpreadsheet {
     return shoppingStartDate;
   }
 
-  isColBNotTwo(arr) {
-    //console.log('arr: [%s]', arr);
-    return arr[1] != 2;
-  }
-
   onlyUnique(value, index, self) { //console.log("MySpreadsheet.onlyUnique");
     //console.log('value: [%s]', value);
     //console.log('value[0]: [%s]', value[0]);

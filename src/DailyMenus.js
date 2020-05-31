@@ -66,20 +66,43 @@ class DailyMenus {
     return shoppingStartDate;
   }
 
+  getTodaysMeals() {
+    const dateToday = this.getUtilities().formatDate(new Date(), "GMT+1", "E, d MMMM yyyy");
+
+    const textFinder = this.getSheet().createTextFinder(dateToday);
+    
+    const searchRow = textFinder.findNext().getRow();
+    
+    const a1Range = "A" + searchRow + ":E" + (searchRow);
+
+    const rangeValues = this.getSheet().getRange(a1Range).getValues();
+    
+    const meals = rangeValues[0];
+    
+    let todaysMeals = {};
+    
+    todaysMeals.Breakfast = meals[1];
+    todaysMeals.Lunch = meals[2];
+    todaysMeals.Dinner = meals[3];
+    todaysMeals.Snacks = meals[4];
+    
+    return todaysMeals;
+  }
+
   getUtilities() { //console.log("DailyMenus.getUtilities");
     return Utilities;
   }
 
   goToTodaysMenu() { //console.log("DailyMenus.goToTodaysMenu");
-    const ui = SpreadsheetApp.getUi();
+
     const dateToday = this.getUtilities().formatDate(new Date(), "GMT+1", "E, d MMMM yyyy"); //console.log("DailyMenus.goToTodaysMenu dateToday %s", dateToday);
-    //ui.alert("dateToday: " + dateToday);
+
     const textFinder = this.getSheet().createTextFinder(dateToday);
     const searchRow = textFinder.findNext().getRow();
-    //ui.alert("searchRow: " + searchRow);
+
     //console.log("DailyMenus.goToTodaysMenu searchRow %s", searchRow);
     const a1Range = "A" + searchRow + ":E" + (6 + searchRow);
-    //ui.alert("a1Range: " + a1Range);
+
     this.getSheet().setActiveRange(this.getSheet().getRange(a1Range));
   }
 

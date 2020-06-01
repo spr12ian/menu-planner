@@ -24,7 +24,7 @@ class LinkChecker{
     } else {
       msg = "All links OK";
     }
-    this.toast(msg, title, 500);
+    this.toast(msg, title, 3);
   }
 
   fetch(url) {

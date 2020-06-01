@@ -27,9 +27,9 @@ class ShoppingList {
     return ingredientsToShopFor;
   }
 
-  getMealsToShopFor() { console.log("ShoppingList.getMealsToShopFor");
+  getMealsToShopFor() { //console.log("ShoppingList.getMealsToShopFor");
     const mealsToShopFor = this.getMySpreadsheet().getMealsToShopFor(); //console.log("getMealsToShopFor: mealsToShopFor", mealsToShopFor);
-    console.log("ShoppingList.getMealsToShopFor typeof mealsToShopFor: %s", typeof mealsToShopFor);
+    //console.log("ShoppingList.getMealsToShopFor typeof mealsToShopFor: %s", typeof mealsToShopFor);
     return mealsToShopFor;
   }
 

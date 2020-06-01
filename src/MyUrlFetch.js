@@ -11,7 +11,7 @@ class MyUrlFetch {
     return response;
   }
 
-  getDefaultHTTPResponse() { console.log("MyUrlFetch.getDefaultHTTPResponse");
+  getDefaultHTTPResponse() { //console.log("MyUrlFetch.getDefaultHTTPResponse");
     return new MyHTTPResponse();
   }
 
@@ -33,13 +33,13 @@ class MyUrlFetch {
     return this.setHTTPResponse(this.getDefaultHTTPResponse());
   }
 
-  setHTTPResponse(HTTPResponse) { console.log("MyUrlFetch.setHTTPResponse HTTPResponse: %s", HTTPResponse);
+  setHTTPResponse(HTTPResponse) { //console.log("MyUrlFetch.setHTTPResponse HTTPResponse: %s", HTTPResponse);
     this.validateHTTPResponse(HTTPResponse);
     this.HTTPResponse = HTTPResponse;
     return HTTPResponse;
   }
 
-  validateHTTPResponse(HTTPResponse) { console.log("MyUrlFetch.validateHTTPResponse HTTPResponse: %s", HTTPResponse);
+  validateHTTPResponse(HTTPResponse) { //console.log("MyUrlFetch.validateHTTPResponse HTTPResponse: %s", HTTPResponse);
     if (typeof HTTPResponse === "undefined") {
       throw new RangeError("HTTPResponse is undefined");
     }

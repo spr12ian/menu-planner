@@ -90,7 +90,7 @@ function emailShoppingList() {
       emailBody += "]\n";
     }
   });
-  console.log(emailBody);
+  //console.log(emailBody);
   GmailApp.sendEmail("hope.survives@gmail.com", "Shopping List", emailBody)
 }
 
@@ -98,6 +98,8 @@ function generateDailyMenus() {
   const mySpreadsheet = new MySpreadsheet();
   const menuRota = new MenuRota(mySpreadsheet);
   const dailyMenus = new DailyMenus(mySpreadsheet);
+  
+  menuRota.checkMeals();
   
   dailyMenus.setValues(menuRota.getOutput());
 }

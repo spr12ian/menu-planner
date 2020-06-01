@@ -38,31 +38,42 @@ class Meals {
     return links;
   }
 
-getServingsPerMeal(meal) { //console.log("Meals.getServingsPerMeal");
-  //console.log("Meals.getServingsPerMeal: meal: [%s]", meal);
-  const allMeals = this.allMeals; //console.log("allMeals %s", allMeals);
-  let servingsPerMeal;
-  for (const mealIndex in allMeals) {
-    //console.log(mealIndex);
-    //console.log(allMeals[mealIndex]);
-    //console.log(allMeals[mealIndex][0]);
-    //console.log(allMeals[mealIndex][1]);
-    if (meal === allMeals[mealIndex][0]) {
-      servingsPerMeal = allMeals[mealIndex][1]; //console.log("servingsPerMeal: [%s]", servingsPerMeal);
-      return servingsPerMeal;
+  getMeals() { //console.log("Meals.getMeals");
+    const meals = [];
+    const mealColumn = 0;
+    let allMeals = this.getAllMeals(); //console.log("allMeals %s", allMeals);
+    for (let mealIndex in allMeals) {
+      let meal = allMeals[mealIndex][mealColumn];
+      meals.push(meal);
     }
+    return meals;
   }
-  //console.log("servingsPerMeal NOT assigned", servingsPerMeal);
-  return servingsPerMeal;
-}
 
-getSheet() { //console.log("Meals.getSheet");  
-  const sheet = this.menuPlanner.getActiveSpreadsheet().getSheetByName(this.getSheetName()); //console.log(sheet);
-  return sheet;
-}
+  getServingsPerMeal(meal) { //console.log("Meals.getServingsPerMeal");
+    //console.log("Meals.getServingsPerMeal: meal: [%s]", meal);
+    const allMeals = this.allMeals; //console.log("allMeals %s", allMeals);
+    let servingsPerMeal;
+    for (const mealIndex in allMeals) {
+      //console.log(mealIndex);
+      //console.log(allMeals[mealIndex]);
+      //console.log(allMeals[mealIndex][0]);
+      //console.log(allMeals[mealIndex][1]);
+      if (meal === allMeals[mealIndex][0]) {
+        servingsPerMeal = allMeals[mealIndex][1]; //console.log("servingsPerMeal: [%s]", servingsPerMeal);
+        return servingsPerMeal;
+      }
+    }
+    //console.log("servingsPerMeal NOT assigned", servingsPerMeal);
+    return servingsPerMeal;
+  }
 
-getSheetName() { //console.log("Meals.getSheetName");
-  const sheetName = this.sheetName || this.getDefaultSheetName(); //console.log("sheetName: [%s]", sheetName);
-  return sheetName;
-}
+  getSheet() { //console.log("Meals.getSheet");  
+    const sheet = this.menuPlanner.getActiveSpreadsheet().getSheetByName(this.getSheetName()); //console.log(sheet);
+    return sheet;
+  }
+
+  getSheetName() { //console.log("Meals.getSheetName");
+    const sheetName = this.sheetName || this.getDefaultSheetName(); //console.log("sheetName: [%s]", sheetName);
+    return sheetName;
+  }
 }

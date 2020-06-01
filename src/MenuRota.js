@@ -2,6 +2,23 @@ class MenuRota {
   constructor(mySpreadsheet) { //console.log("MenuRota");
     this.mySpreadsheet = mySpreadsheet; //console.log("MenuRota mySpreadsheet: %s", mySpreadsheet);
   }
+
+  checkMeals() { //console.log("MenuRota.checkMeals");
+    const meals = new Meals(this.mySpreadsheet);
+    const mealsGrid = this.getDataValuesNoHeader();
+    const mealList = meals.getMeals();
+    const uniqueMeals = new Set(mealList);
+    
+    mealsGrid.forEach(mealsRow => {
+      let rowIndex = 2;
+      while (typeof mealsRow[rowIndex] !== "undefined" && mealsRow[rowIndex].length) {
+        if (!uniqueMeals.has(mealsRow[rowIndex])) {
+          throw new Error("Menu Rota: Meal not found " + mealsRow[0] + " " + mealsRow[1] + " " + mealsRow[rowIndex]);
+        }
+        rowIndex++;
+      }
+    });
+  }
   
   getDataRangeValues() {
     return this.getSheet().getDataRange().getValues();

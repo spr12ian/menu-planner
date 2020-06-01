@@ -25,7 +25,7 @@ class DailyMenus {
     return howManyMealsToShopFor;
   }
 
-  getMealsToShopFor() { console.log("DailyMenus.getMealsToShopFor");
+  getMealsToShopFor() { //console.log("DailyMenus.getMealsToShopFor");
     if (typeof this.mealsToShopFor === "undefined") {
       return this.setDefaultMealsToShopFor();
     } else {
@@ -106,11 +106,11 @@ class DailyMenus {
     this.getSheet().setActiveRange(this.getSheet().getRange(a1Range));
   }
 
-  setDefaultMealsToShopFor() { console.log("DailyMenus.setDefaultMealsToShopFor");
+  setDefaultMealsToShopFor() { //console.log("DailyMenus.setDefaultMealsToShopFor");
     return this.setMealsToShopFor(this.getMealsToShopForFromSheet());
   }
 
-  setMealsToShopFor(mealsToShopFor) { console.log("DailyMenus.setMealsToShopFor mealsToShopFor: %s", mealsToShopFor);
+  setMealsToShopFor(mealsToShopFor) { //console.log("DailyMenus.setMealsToShopFor mealsToShopFor: %s", mealsToShopFor);
     this.validateMealsToShopFor(mealsToShopFor);
     this.mealsToShopFor = mealsToShopFor;
     return mealsToShopFor;

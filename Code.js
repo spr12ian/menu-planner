@@ -121,6 +121,8 @@ class DailyMenus {
 
   getOutputValues(seasonalMenus, howManyRowsToRefresh) {
 
+    logIt('DailyMenus.getOutputValues started')
+
     function* makeInfiniteIterator(arr) {
       const start = 1;
       const end = arr.length;
@@ -142,11 +144,13 @@ class DailyMenus {
       logIt('makeMealsIterator started')
       logObjectArray(seasonMenu, 'seasonMenu')
 
-      function getMeals(row) {
+      function getMealsFromRow(row) {
         logIt('getMeals started')
         logObject(row, 'row')
+
         const meals = row.meals
         logArray(meals, 'meals')
+
         return meals;
       }
 
@@ -164,21 +168,24 @@ class DailyMenus {
         const iteratorGrid = {};
         let arrIndex = 0;
 
-        getWeekDays().forEach(day => {
-          logIt(`getWeekDays().forEach day: ${day} started`)
-          iteratorGrid[day] = {};
+        getWeekDays().forEach(dayName => {
+          logIt(`getWeekDays().forEach dayName: ${dayName} started`)
+
+          iteratorGrid[dayName] = {};
           mealtimesArray.forEach(mealtime => {
             logIt(`mealtimesArray().forEach mealtime: ${mealtime} started`)
-            const meals = getMeals(seasonMenu[arrIndex]);
-            if (day === 'Sunday' && mealtime === 'Breakfast' && seasonMenu[arrIndex].season === 'Winter') {
-              logIt(meals, 'meals')
+
+            const meals = getMealsFromRow(seasonMenu[arrIndex]);
+            if (dayName === 'Sunday' && mealtime === 'Breakfast' && seasonMenu[arrIndex].season === 'Winter') {
+              logArray(meals, 'meals')
             }
+
             const mealsiterator = makeInfiniteIterator(meals)
-            iteratorGrid[day][mealtime] = mealsiterator
+            iteratorGrid[dayName][mealtime] = mealsiterator
             arrIndex++
             logIt(`mealtimesArray().forEach mealtime: ${mealtime} finished`)
           });
-          logIt(`getWeekDays().forEach day: ${day} finished`)
+          logIt(`getWeekDays().forEach dayName: ${dayName} finished`)
         });
         logObject(iteratorGrid, iteratorGrid)
         logIt('getIteratorGrid finished')
@@ -194,61 +201,83 @@ class DailyMenus {
       let end = seasonMenu.length;
 
       const nextIterator = {
-        next: function (dayName) {
-          logIt(`dayName: ${dayName}, seasonMenu[nextIndex - 1].day: ${seasonMenu[nextIndex - 1].day}`)
-          while (seasonMenu[nextIndex - 1].day != dayName) {
+        next: function (pDayName) {
+          logIt(`makeMealsIterator.nextIterator.next started`)
+          logIt(`pDayName: ${pDayName}`)
+          let prevIndex = nextIndex - 1
+          logIt(`prevIndex: ${prevIndex}`)
+
+          logIt(`seasonMenu[${prevIndex}].dayName: ${seasonMenu[prevIndex].dayName}`)
+
+          while (seasonMenu[prevIndex].dayName != pDayName) {
             if (nextIndex < end) {
               nextIndex++
             } else {
               nextIndex = start
             }
+            prevIndex = nextIndex - 1
           }
-          const day = seasonMenu[nextIndex - 1].day
-          const mealtime = seasonMenu[nextIndex - 1].mealtime
-          const meal = iteratorGrid[day][mealtime].next().value
+          
+          const dayName = seasonMenu[prevIndex].dayName
+          logIt(`dayName: ${dayName}`)
 
-          if (day === 'Sunday' && mealtime === 'Breakfast' && seasonMenu[nextIndex - 1].season === 'Winter') {
+          const mealtime = seasonMenu[prevIndex].mealtime
+          logIt(`mealtime: ${mealtime}`)
 
-            logIt(meal, 'meal')
+          const meal = iteratorGrid[dayName][mealtime].next().value
 
+          if (dayName === 'Sunday' && mealtime === 'Lunch' && seasonMenu[prevIndex].season === 'Summer') {
+            logIt(`meal: ${meal}`)
           }
 
-          let result = { day: day, mealtime: mealtime, meal: meal }
+          const result = { dayName, mealtime, meal }
 
           if (nextIndex < end) {
             nextIndex++
           } else {
             nextIndex = start
           }
+
+          logObject(result, 'result')
+
+          logIt(`makeMealsIterator.nextIterator.next finished`)
+
           return result
         }
       }
+
+      logIt('makeMealsIterator finished')
       return nextIterator
     }
 
-    const days = makeDaysIterator(getFirstDateOfYear())
+    const winterMenu = seasonalMenus.getSeasonMenu('Winter')
+    const springMenu = seasonalMenus.getSeasonMenu('Spring')
+    logObjectArray(springMenu, 'springMenu')
 
-    const winterIterator = makeMealsIterator(seasonalMenus.getSeasonMenu('Winter'))
-    const springIterator = makeMealsIterator(seasonalMenus.getSeasonMenu('Spring'))
-    const summerIterator = makeMealsIterator(seasonalMenus.getSeasonMenu('Summer'))
-    const autumnIterator = makeMealsIterator(seasonalMenus.getSeasonMenu('Autumn'))
+    const summerMenu = seasonalMenus.getSeasonMenu('Summer')
+    logObjectArray(summerMenu, 'summerMenu')
+
+    const autumnMenu = seasonalMenus.getSeasonMenu('Autumn')
+
+    const winterIterator = makeMealsIterator(winterMenu)
+    const springIterator = makeMealsIterator(springMenu)
+    const summerIterator = makeMealsIterator(summerMenu)
+    const autumnIterator = makeMealsIterator(autumnMenu)
 
     let mealsIterator
     const output = []
 
     output.push(this.getUpdateRangeHeader())
 
+    const { first, iterator: days } = setupDaysIterator(getFirstDateOfYear())
+    let day = first
+    
     for (let dayIndex = 0; dayIndex < howManyRowsToRefresh; dayIndex++) {
-      const nextDay = days.next()
+      const dayName = day.dayName // Sunday
 
-      const day = nextDay.day
-      logIt(`day: ${day}`) // 19/01/1964
+      const season = day.season // Winter, Spring, Summer, Autumn
 
-      const dayName = nextDay.dayName
-      logIt(`dayName: ${dayName}`) // Sunday
-
-      const season = nextDay.season
-      logIt(season)
+      logIt(`dayName: ${dayName}, season: ${season}`)
 
       switch (season) {
         case 'Winter': mealsIterator = winterIterator
@@ -263,22 +292,20 @@ class DailyMenus {
       }
 
       const nextMeal = mealsIterator.next(dayName)
+
       const breakfast = nextMeal.meal
-      const mealDayName = nextMeal.day
-      logIt(`season: ${season}`)
-      logIt(`day: ${day}`)
-      logIt(`day: ${mealDayName}`)
-      //if (season === 'Winter' && mealDayName === 'Sunday') {
-      logIt(`mealDayName: ${mealDayName}, day: ${day}, breakfast: ${breakfast}`)
-      //}
       const lunch = mealsIterator.next(dayName).meal
       const dinner = mealsIterator.next(dayName).meal
       const eveningSnack = mealsIterator.next(dayName).meal
 
-      output.push([day, breakfast, lunch, dinner, eveningSnack])
+      output.push([day.day, breakfast, lunch, dinner, eveningSnack])
+
+      day = days.next()
+      logObject(day, 'day')
     }
 
-    logIt('makeMealsIterator finished')
+    logIt('DailyMenus.getOutputValues finished')
+
     return output;
   }
 
@@ -338,7 +365,10 @@ class DailyMenus {
   }
 
   goToTodaysMenu() {
+    // Daily Menus column Day should be formatted as 'Sun, 1 January 2023'
+    // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
     const dateToday = getFormattedDate(new Date(), "GMT+1", "E, d MMMM yyyy")
+    console.log(`dateToday: ${dateToday}`)
 
     const textFinder = this.getSheet().createTextFinder(dateToday);
     const searchRow = textFinder.findNext().getRow();
@@ -355,13 +385,18 @@ class DailyMenus {
   }
 
   refreshData(seasonalMenus) {
+    logIt('DailyMenus.refreshData started')
+
     const howManyRowsToRefresh = 366
+    logIt(`howManyRowsToRefresh: ${howManyRowsToRefresh}`)
+
     const outputValues = this.getOutputValues(seasonalMenus, howManyRowsToRefresh)
     logArray(outputValues, 'outputValues')
 
     const range = this.sheet.getRange(1, 1, howManyRowsToRefresh + 1, 5)
 
     range.setValues(outputValues)
+    logIt('DailyMenus.refreshData finished')
   }
 
   setDefaultMealsToShopFor() {
@@ -448,16 +483,9 @@ class DateChange {
       });
     });
 
-    GmailApp.sendEmail("hope.survives@gmail.com", "Today's Menu (" + this.getToday() + ")", emailBody)
-  }
+    emailBody += `\n\nSent from (onDateChange): ${spreadsheet.getUrl()}\n`
 
-  getToday() {
-    const date = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dtf = new Intl.DateTimeFormat('en-GB', options);
-    const today = dtf.format(date);
-
-    return today;
+    sendMeEmail("Today's Menu (" + getToday() + ")", emailBody)
   }
 
   isEnabledEmailTodaysMenu() {
@@ -1080,7 +1108,7 @@ class SeasonalMenus {
   }
 
   getGridArray() {
-    logIt('getGridArray')
+    logIt('getGridArray started')
 
     const values = this.getDataValuesNoHeader()
     // logArray(values, 'values')
@@ -1090,7 +1118,7 @@ class SeasonalMenus {
     values.forEach((value) => {
       const rowObject = {
         season: value[0],
-        day: value[1],
+        dayName: value[1],
         mealtime: value[2],
         meals: [value[3], value[4], value[5], value[6]] // Infinite iterator should  take care of week 5
       }
@@ -1098,30 +1126,8 @@ class SeasonalMenus {
     })
     logObjectArray(gridArray, 'gridArray')
 
+    logIt('getGridArray finished')
     return gridArray
-  }
-
-  getGridMeals(season, weekDay) {
-    logIt('getGridMeals')
-    logIt(`season: ${season}`)
-    logIt(`weekDay: ${weekDay}`)
-    if (!this.gridArray) {
-      this.gridArray = this.getGridArray()
-    }
-    logObjectArray(this.gridArray, 'this.gridArray')
-
-    const gridMeals = this.gridArray.filter(element => {
-      logIt(`gridArray.filter`)
-      logObject(element, 'element')
-      const match = (element.season === season) && (element.day === weekDay)
-      logIt(match, 'match')
-      return match
-    })
-
-    logObjectArray(gridMeals, 'gridMeals')
-    crash('1408')
-
-    return gridMeals
   }
 
   getRange(...args) {
@@ -1143,8 +1149,10 @@ class SeasonalMenus {
     const seasonMenu = this.gridArray.filter(element => {
       logIt(`gridArray.filter`)
       logObject(element, 'element')
+
       const match = (element.season === season)
       logIt(match, 'match')
+
       return match
     })
 
@@ -1179,99 +1187,6 @@ class SeasonalMenus {
     //logSet(unique, 'unique')
 
     return unique
-  }
-}
-
-class SeasonalMenusColumn {
-  constructor(spreadsheet) {
-    logIt('SeasonalMenusColumn.constructor started')
-
-    this.sheetName = 'Seasonal Menus Column'
-    this.spreadsheet = spreadsheet
-    this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt)
-    logIt('SeasonalMenusColumn.constructor finished')
-
-    return this
-  }
-
-  // Check that meals listed on the Seasonal Menus are listed on the Meals sheet
-  checkMeals() {
-    const meals = new Meals(this.spreadsheet)
-    const uniqueMeals = meals.getUniqueMeals()
-    logSet(uniqueMeals, 'uniqueMeals')
-
-    const uniqueSeasonalMeals = this.getUniqueMeals();
-    logSet(uniqueSeasonalMeals, 'uniqueSeasonalMeals')
-
-    if (!isSuperset(uniqueMeals, uniqueSeasonalMeals)) {
-      crash([...difference(uniqueSeasonalMeals, uniqueMeals)])
-    }
-  }
-
-  getDataRangeValues() {
-    return this.sheet.getDataRange().getValues();
-  }
-
-  getDataValuesNoHeader() {
-    const dataRangeValues = this.getDataRangeValues();
-    // Get rid of the header
-    dataRangeValues.shift();
-
-    return dataRangeValues;
-  }
-
-  getSpreadsheet() {
-    return this.spreadsheet;
-  }
-
-  getSheetName() {
-    return this.sheetName;
-  }
-
-  getSheet() {
-    return this.sheet;
-  }
-
-  getUniqueMeals() {
-    // Ignore first row. 4 seasons * 28 = 112. 4 meals * 7 = 28
-    const grid = this.sheet.getRange("D2:G113").getValues();
-    //logArray(grid, 'grid')
-
-    const unique = new Set()
-
-    grid.forEach(gridRow => {
-      let col = 0;
-      while (typeof gridRow[col] !== "undefined" && gridRow[col].length) {
-        unique.add(gridRow[col])
-        col++;
-      }
-    });
-    //logSet(unique, 'unique')
-
-    return unique
-  }
-
-  hideSheet() {
-    return this.sheet.hideSheet()
-  }
-
-  refreshMealData(meals) {
-    this.sheet.getRange("E2:E449").setValues(meals)
-  }
-
-  showSheet() {
-    return this.sheet.showSheet()
-  }
-
-  updateSeasonalMenusColumn(seasonalMenus) {
-    const week1 = seasonalMenus.getRange("D2:D").getValues()
-    const week2 = seasonalMenus.getRange("E2:E").getValues()
-    const week3 = seasonalMenus.getRange("F2:F").getValues()
-    const week4 = seasonalMenus.getRange("G2:G").getValues()
-
-    const meals = [...week1, ...week2, ...week3, ...week4]
-
-    this.refreshMealData(meals)
   }
 }
 
@@ -1429,6 +1344,9 @@ function checkLinks() {
 
 function checkRecipes() {
   const spreadsheet = new MenuPlannerSpreadsheet()
+    logItLevel++
+    logObject(spreadsheet, 'spreadsheet')
+    logItLevel--
   let meals = new Meals(spreadsheet);
   let recipes = new Recipes(spreadsheet);
   recipes.checkRecipes(meals.getAllMeals().map(mealRow => mealRow[0]));
@@ -1440,15 +1358,10 @@ function checkSeasonalMenus() {
 
   const spreadsheet = new MenuPlannerSpreadsheet()
   const seasonalMenus = new SeasonalMenus(spreadsheet);
-  const seasonalMenusColumn = new SeasonalMenusColumn(spreadsheet);
 
   // Check that meals listed on the Seasonal Menus sheet are listed on the Meals sheet
   seasonalMenus.checkMeals()
 
-  seasonalMenusColumn.showSheet()
-  // Reconfigure Seasonal Menus so that the meals are on a single column
-  seasonalMenusColumn.updateSeasonalMenusColumn(seasonalMenus)
-  seasonalMenusColumn.hideSheet()
   logIt('checkSeasonalMenus finished')
 }
 
@@ -1508,7 +1421,7 @@ function emailShoppingList() {
       emailBody += "]\n";
     }
   })
-  GmailApp.sendEmail("hope.survives@gmail.com", "Shopping List", emailBody)
+  sendMeEmail("Shopping List", emailBody)
 }
 
 function goToTodaysMenu() {
@@ -1521,7 +1434,6 @@ function goToTodaysMenu() {
 
 function onDateChange() {
   const spreadsheet = getActiveSpreadsheet()
-  logIt(spreadsheet.getName())
   const dateChange = new DateChange(spreadsheet);
   dateChange.executeDateChangeEvents();
 }
@@ -1541,7 +1453,6 @@ function onOpen() {
 
 function updateDailyMenus() {
   const spreadsheet = new MenuPlannerSpreadsheet()
-
   const seasonalMenus = new SeasonalMenus(spreadsheet)
 
   const dailyMenus = new DailyMenus(spreadsheet);

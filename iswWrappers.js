@@ -1,11 +1,11 @@
-// 2023-06-27 17:23
+// 2023-08-03 06:57
 // The entire contents of the iswWrappers.gs file should be copied into the client project
 // and tested there
 
 /**
  * Drop-in replacement for Logger.log that uses a spreadsheet backend instead.
  * 
- * Based on code by Adam Morris classroomtechtools.ctt@gmail.com
+ * The Logger replacement is based on code by Adam Morris classroomtechtools.ctt@gmail.com
  * https://github.com/classroomtechtools/modularLibrariesV8/blob/master/Logger/Logger.js
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software
@@ -242,7 +242,7 @@
   const ascending = true
 
   // This will replace Logger. If set to false, you'll have to initialize the library with call to ReplaceLogger()
-  const auto = false;
+  const auto = true;
 
   let isBound = false
 
@@ -279,10 +279,25 @@
     } else {
       ReplaceLogger();
     }
+  } else {
+    if (isBound && SpreadsheetApp.getActive().getId() === spreadsheetId) {
+      sheet = SpreadsheetApp.getActive().getSheetByName(sheetName)
+      if (sheet) {
+        SpreadsheetApp.getActive().deleteSheet(sheet)
+      }
+    }
   }
 })(this);
 
 // ISW wrappers
+
+function _doNotRunThisFunction() {
+  crash("Do Not Run This 'iswWrappers' Function")
+}
+
+function addDays(date, days) {
+  return isw.addDays(date, days)
+}
 
 function crash(msg) {
   isw.crash(msg)
@@ -300,20 +315,44 @@ function getActiveSpreadsheet() {
   return isw.getActiveSpreadsheet()
 }
 
+function getAmountAsGBP(amount) {
+  return isw.getAmountAsGBP(amount)
+}
+
 function getDayName(date) {
   return isw.getDayName(date)
+}
+
+function getDayOfMonth(date) {
+  return isw.getDayOfMonth(date)
 }
 
 function getFirstDateOfYear() {
   return isw.getFirstDateOfYear()
 }
 
+function getFirstRowRange(sheet) {
+  return isw.getFirstRowRange(sheet)
+}
+
 function getFormattedDate(date, timeZone, format) {
   return isw.getFormattedDate(date, timeZone, format)
 }
 
-function getSeason(date) {
-  return isw.getSeason(date)
+function getNewDate() {
+  return isw.getNewDate()
+}
+
+function getOrdinalDate(date) {
+  return isw.getOrdinalDate(date, logIt)
+}
+
+function getSeasonName(date) {
+  return isw.getSeasonName(date)
+}
+
+function getToday(options) {
+  return isw.getToday(options)
 }
 
 function getWeekDays() {
@@ -354,16 +393,39 @@ function isGSuiteUser() {
 
 }
 
+function isSingleCell(range) {
+  return isw.isSingleCell(range)
+}
+
 function isSuperset(set, subset) {
   return isw.isSuperset(set, subset)
+}
+
+function logBoolean(boolean, booleanName = '') {
+  isw.logBoolean(boolean, booleanName, logIt)
 }
 
 function logArray(array, arrayName = '') {
   isw.logArray(array, arrayName, logIt)
 }
 
+function logDate(date, dateName = '') {
+  isw.logDate(date, dateName, logIt)
+}
+
+function logFile(file, fileName = '') {
+  isw.logFile(file, fileName, logIt)
+}
+
+function logEventObject(eventObject, triggerName = '') {
+  isw.logEventObject(eventObject, triggerName, logIt)
+}
+
 function logIt(...parameters) {
   if (logItLevel) {
+    if ([...parameters].length > 1) {
+      crash(`logIt only expects 1 arguement not ${[...parameters].length}`)
+    }
     isw.log(...[parameters], Logger.log)
   }
 }
@@ -376,6 +438,10 @@ function logObjectArray(array, arrayName = '') {
   isw.logObjectArray(array, arrayName, logIt)
 }
 
+function logRange(range, rangeName = '') {
+  isw.logRange(range, rangeName, logIt)
+}
+
 function logSet(uniqueCollection, uniqueCollectionName = '') {
   logIt(`logSet uniqueCollectionName: ${uniqueCollectionName}`)
   logIt(uniqueCollection instanceof Set)
@@ -384,16 +450,33 @@ function logSet(uniqueCollection, uniqueCollectionName = '') {
   isw.logSet(uniqueCollection, uniqueCollectionName, logIt)
 }
 
+function logSheet(sheet, variableName = '') {
+  isw.logSheet(sheet, variableName, logIt)
+}
+
 function logString(string, stringName = '') {
   isw.logString(string, stringName, logIt)
+}
+
+function logSpreadsheet(spreadsheet, variableName = '') {
+  isw.logSpreadsheet(spreadsheet, variableName, logIt)
 }
 
 function logType(value, name = 'Value') {
   isw.logType(value, name, logIt)
 }
 
-function makeDaysIterator(startDate) {
-  return isw.makeDaysIterator(startDate)
+// Returns an object with two properties: first and iterator
+function setupDaysIterator(startDate) {
+  return isw.setupDaysIterator(startDate)
+}
+
+function sendMeEmail(subject, body, options) {
+  return isw.sendMeEmail(subject, body, options, logIt)
+}
+
+function sendEmail(recipient, subject, body, options) {
+  return isw.sendEmail(recipient, subject, body, options, logIt)
 }
 
 function toast(msg, title, timeoutSeconds) {

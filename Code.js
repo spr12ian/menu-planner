@@ -586,8 +586,6 @@ class Meals {
     this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt)
 
     this.allMeals = this.getAllMeals()
-
-    return this
   }
 
   getAllMeals() {
@@ -734,9 +732,7 @@ class MealsToShopFor {
 
 class MenuPlannerSpreadsheet {
   constructor() {
-    this.spreadsheet = getActiveSpreadsheet()
-
-    return this
+    this.spreadsheet = getActiveSpreadsheet();
   }
 
   getDailyMenus() {

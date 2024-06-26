@@ -1,22 +1,8 @@
 class Config {
   constructor(spreadsheet) {
-    this.sheetName = 'Config'
-    this.spreadsheet = spreadsheet
-    this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt)
-
-    this.readKeyValues()
-
-    return this
-  }
-
-  getDaysToShopFor() {
-    const daysToShopForKey = "Days to shop for"
-    const daysToShopFor = this.getValue(daysToShopForKey)
-    return daysToShopFor;
-  }
-
-  getKeyValues() {
-    return this.keyValues;
+    this.sheetName = "Config";
+    this.spreadsheet = spreadsheet;
+    this.sheet = this.spreadsheet.getSheetByName(this.sheetName);
   }
 
   getSheet() {
@@ -28,95 +14,61 @@ class Config {
   }
 
   getShoppingStartDate() {
-    const shoppingStartDateKey = "Shopping start date"
-    const shoppingStartDate = this.getValue(shoppingStartDateKey).toDateString()
-    return shoppingStartDate;
+    return this.getValue("Shopping start date");
   }
 
   getValue(key) {
-    let value
-
-    for (let i in this.keyValues) {
-      if (this.keyValues[i][0] === key) {
-        value = this.keyValues[i][1]
-        break;
+    for (const row of this.keyValues) {
+      if (row[0] === key) {
+        return row[1];
       }
     }
 
-    return value;
-  }
-
-  getWeekToShopFor() {
-    const weekToShopForKey = "Week to shop for"
-    const weekToShopFor = this.getValue(weekToShopForKey)
-    return weekToShopFor;
+    throw new Error(`Key "${key}" not found in config`);
   }
 
   isEnabledEmailTodaysMenu() {
-    const isEnabledEmailTodaysMenuKey = "Email today's menu"
-    const isEnabledEmailTodaysMenu = this.getValue(isEnabledEmailTodaysMenuKey)
-
-    return isEnabledEmailTodaysMenu;
+    return this.getValue("Email today's menu");
   }
 
-  readKeyValues() {
-    const a1QuantityTypes = "Config!A2:B"
-    this.keyValues = this.sheet.getRange(a1QuantityTypes).getValues()
-    return this;
+  get keyValues() {
+    const keyRange = this.sheet.getRange("Config!A2:B");
+    return keyRange.getDisplayValues();
   }
 }
 
 class DailyMenus {
   constructor(spreadsheet) {
-    this.sheetName = 'Daily Menus'
-    this.spreadsheet = spreadsheet
-    this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt)
+    this.sheetName = "Daily Menus";
+    this.spreadsheet = spreadsheet;
+    this.sheet = this.spreadsheet.getSheetByName(this.sheetName);
+  }
+
+  getDateValues() {
+    return this.sheet.getRange("A2:A").getDisplayValues();
   }
 
   getEndDateRow() {
-    const endDateRow = this.getStartDateRow() + 6
-    return endDateRow;
+    return this.getStartDateRow() + 6;
   }
 
   getHowManyMealsToShopFor() {
-    const howManyMealsToShopFor = [];
-    const mealsToShopFor = this.getMealsToShopFor()
-
-    for (const mealIndex in mealsToShopFor) {
-      const key = mealsToShopFor[mealIndex]
-      howManyMealsToShopFor[key] = howManyMealsToShopFor[key] ? howManyMealsToShopFor[key] + 1 : 1;
+    const howManyMealsToShopFor = {};
+    for (const meal of this.getMealsToShopFor()) {
+      howManyMealsToShopFor[meal] = (howManyMealsToShopFor[meal] || 0) + 1;
     }
-
     return howManyMealsToShopFor;
   }
 
   getMealsToShopFor() {
-    if (typeof this.mealsToShopFor === "undefined") {
-      return this.setDefaultMealsToShopFor();
-    } else {
-      return this.mealsToShopFor;
-    }
+    return this.mealsToShopFor ?? this.setDefaultMealsToShopFor();
   }
 
   getMealsToShopForFromSheet() {
-    const mealsToShopFor = [];
-
-    const startDateRow = this.getStartDateRow()
-
-    const endDateRow = this.getEndDateRow()
-
-    const a1Range = "B" + startDateRow + ":E" + endDateRow
-
-    const meals = this.getSheet().getRange(a1Range).getValues();
-    logIt('DailyMenus: meals', meals);
-
-    for (const dayIndex in meals) {
-      for (const mealIndex in meals[dayIndex]) {
-        mealsToShopFor.push(meals[dayIndex][mealIndex]);
-      }
-    }
-
-    return mealsToShopFor;
+    const startDateRowIndex = this.getStartDateRow();
+    const endDateRowIndex = this.getEndDateRow();
+    const mealsRange = this.sheet.getRange(`B${startDateRowIndex}:E${endDateRowIndex}`);
+    return mealsRange.getValues().flat().filter(Boolean);
   }
 
   getOutputValues(seasonalMenus, howManyRowsToRefresh) {
@@ -309,8 +261,25 @@ class DailyMenus {
     return output;
   }
 
+
+  getRowIndexByDateValue(dateValue) {
+    const dateValues = this.getDateValues();
+
+    let rowIndex = dateValues.findIndex(row => row[0] === dateValue);
+
+    if (rowIndex !== -1) {
+      rowIndex = rowIndex + 2
+    }
+
+    return rowIndex;
+  }
+
   getSheet() {
     return this.sheet
+  }
+
+  getSheetName() {
+    return this.sheet.getName()
   }
 
   getSpreadsheet() {
@@ -318,64 +287,54 @@ class DailyMenus {
   }
 
   getShoppingStartDate() {
-    const shoppingStartDate = this.shoppingStartDate || this.spreadsheet.getShoppingStartDate()
-    return shoppingStartDate;
+    return this.shoppingStartDate || this.spreadsheet.getShoppingStartDate();
   }
 
   getStartDateRow() {
+    const shoppingStartDate = this.getShoppingStartDate();
 
-    const startDateColumn = 0
+    const rowIndex = this.getRowIndexByDateValue(shoppingStartDate);
 
-    const shoppingStartDate = this.getShoppingStartDate()
-
-    const fullDateRange = this.getSheet().getRange("A2:A").getValues();
-
-    for (let i = 0; i < fullDateRange.length; i++) {
-
-      const dateString = fullDateRange[i][startDateColumn].toDateString()
-      if (dateString == shoppingStartDate) {
-        const retVal = i + 2
-
-        return retVal
-      }
+    if (rowIndex === -1) {
+      const sheetName = this.getSheetName();
+      throw new Error(`Shopping start date not found in ${sheetName}: ${shoppingStartDate}`);
     }
+
+    return rowIndex
   }
 
   getTodaysMeals() {
-    const dateToday = getFormattedDate(new Date(), "GMT+1", "E, d MMMM yyyy");
+    const todayDate = Utilities.formatDate(new Date(), "GMT+1", "dd/MM/yyyy");
+    const rowIndex = this.getRowIndexByDateValue(todayDate);
 
-    const textFinder = this.getSheet().createTextFinder(dateToday);
+    if (rowIndex === -1) {
+      throw new Error(`Date not found in ${this.sheetName}: ${dateValue}`);
+    }
 
-    const searchRow = textFinder.findNext().getRow();
+    const meals = this.sheet.getRange(`B${rowIndex}:E${rowIndex}`).getValues()[0];
 
-    const a1Range = "A" + searchRow + ":E" + (searchRow);
-
-    const rangeValues = this.getSheet().getRange(a1Range).getValues();
-
-    const meals = rangeValues[0];
-
-    let todaysMeals = {};
-
-    todaysMeals.Breakfast = meals[1];
-    todaysMeals.Lunch = meals[2];
-    todaysMeals.Dinner = meals[3];
-    todaysMeals.Snacks = meals[4];
-
-    return todaysMeals;
+    return {
+      Breakfast: meals[1],
+      Lunch: meals[2],
+      Dinner: meals[3],
+      Snacks: meals[4]
+    };
   }
 
   goToTodaysMenu() {
-    // Daily Menus column Day should be formatted as 'Sun, 1 January 2023'
-    // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-    const dateToday = getFormattedDate(new Date(), "GMT+1", "E, d MMMM yyyy")
-    console.log(`dateToday: ${dateToday}`)
+    const sheet = this.sheet;
+    const dateToday = getFormattedDate(new Date(), "GMT+1", "dd/MM/yyyy");
 
-    const textFinder = this.getSheet().createTextFinder(dateToday);
-    const searchRow = textFinder.findNext().getRow();
+    const rowIndex = this.getRowIndexByDateValue(dateToday);
 
-    const a1Range = "A" + searchRow + ":E" + (6 + searchRow);
+    if (rowIndex === -1) {
+      const sheetName = this.getSheetName();
+      throw new Error(`Date not found in ${sheetName}: ${dateToday}`);
+    }
 
-    this.sheet.setActiveRange(this.sheet.getRange(a1Range));
+    const menuRange = sheet.getRange(`A${rowIndex}:E${rowIndex + 6}`);
+
+    sheet.setActiveRange(menuRange);
   }
 
   getUpdateRangeHeader() {
@@ -385,18 +344,15 @@ class DailyMenus {
   }
 
   refreshData(seasonalMenus) {
-    logIt('DailyMenus.refreshData started')
+    logIt(`DailyMenus.refreshData started`)
+    const howManyRowsToRefresh = 366;
 
-    const howManyRowsToRefresh = 366
-    logIt(`howManyRowsToRefresh: ${howManyRowsToRefresh}`)
-
-    const outputValues = this.getOutputValues(seasonalMenus, howManyRowsToRefresh)
-    logArray(outputValues, 'outputValues')
+    const outputValues = this.getOutputValues(seasonalMenus, howManyRowsToRefresh);
 
     const range = this.sheet.getRange(1, 1, howManyRowsToRefresh + 1, 5)
 
     range.setValues(outputValues)
-    logIt('DailyMenus.refreshData finished')
+    logIt(`DailyMenus.refreshData finished`)
   }
 
   setDefaultMealsToShopFor() {
@@ -414,7 +370,6 @@ class DailyMenus {
   }
 
   setValues(values) {
-    ;
     const startRow = 1;
     const startColumn = 1;
     const howManyRows = values.length;
@@ -452,9 +407,7 @@ class DateChange {
     let emailBody = "Meals\n";
 
     Object.keys(todaysMeals).forEach(meal => {
-      //logIt(`meal: ${meal}`)
       const menuItem = todaysMeals[meal]
-      //logIt(`menuItem: ${menuItem}`)
       emailBody += "\n";
       emailBody += meal;
       emailBody += ": ";
@@ -765,12 +718,16 @@ class MealsToShopFor {
       }
     }, this);
 
-    this.sheet.clear();
+    this.sheet.clearContents();
 
-    reducedMeals.forEach(function (meal) {
-      this.sheet.appendRow([meal])
-    }, this);
+    const values = reducedMeals.map(meal => [meal]);
 
+    this.sheet.getRange(1, 1, values.length, 1).setValues(values);
+    /*
+        reducedMeals.forEach(function (meal) {
+          this.sheet.appendRow([meal])
+        }, this);
+    */
     return reducedMeals;
   }
 }
@@ -845,8 +802,12 @@ class MenuPlannerSpreadsheet {
   }
 
   getShoppingStartDate() {
+    logIt(`MenuPlannerSpreadsheet.getShoppingStartDate started`);
+
     const config = new Config(this.spreadsheet)
-    const shoppingStartDate = config.getShoppingStartDate()
+    const shoppingStartDate = config.getShoppingStartDate();
+    logIt(`shoppingStartDate: ${shoppingStartDate}`);
+
     return shoppingStartDate;
   }
 
@@ -1003,15 +964,19 @@ class Recipes {
   }
 
   // Check we have a recipe for every meal
-  checkRecipes(meals) {
-    const dataRangeValues = this.getDataRangeValues()
-    const recipeNames = dataRangeValues.map(row => row[0])
-    const uniqueRecipeNames = new Set(recipeNames)
-    meals.forEach(meal => {
-      if (!uniqueRecipeNames.has(meal)) {
-        throw new Error("No recipe found for " + meal);
-      }
-    });
+  getMissingRecipes(meals) {
+    logArray(meals, 'meals')
+
+    const dataRangeValues = this.getDataRangeValues();
+    logArray(dataRangeValues, 'dataRangeValues')
+
+    const uniqueRecipeNames = new Set(dataRangeValues.map(row => row[0]));
+    logSet(uniqueRecipeNames, 'uniqueRecipeNames')
+
+    const missingRecipes = meals.filter(meal => !uniqueRecipeNames.has(meal));
+    logArray(missingRecipes, 'missingRecipes')
+
+    return missingRecipes;
   }
 
   getDataRangeValues() {
@@ -1074,21 +1039,17 @@ class Recipes {
 
 class SeasonalMenus {
   constructor(spreadsheet) {
-    this.sheetName = 'Seasonal Menus'
-    this.spreadsheet = spreadsheet
-    this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt)
-
-    return this
+    this.sheetName = "Seasonal Menus";
+    this.spreadsheet = spreadsheet;
+    this.sheet = this.spreadsheet.getSheetByName(this.sheetName, logIt);
   }
 
   // Check that meals listed on the Seasonal Menus are listed on the Meals sheet
   checkMeals() {
     const meals = new Meals(this.spreadsheet)
     const uniqueMeals = meals.getUniqueMeals()
-    //logSet(uniqueMeals, 'uniqueMeals')
 
     const uniqueSeasonalMeals = this.getUniqueMeals();
-    //logSet(uniqueSeasonalMeals, 'uniqueSeasonalMeals')
 
     if (!isSuperset(uniqueMeals, uniqueSeasonalMeals)) {
       crash([...difference(uniqueSeasonalMeals, uniqueMeals)])
@@ -1108,25 +1069,17 @@ class SeasonalMenus {
   }
 
   getGridArray() {
-    logIt('getGridArray started')
+    logIt('SeasonalMenus.getGridArray started');
 
-    const values = this.getDataValuesNoHeader()
-    // logArray(values, 'values')
+    const values = this.getDataValuesNoHeader();
+    const gridArray = values.map(value => ({
+      season: value[0],
+      dayName: value[1],
+      mealtime: value[2],
+      meals: value.slice(3)
+    }));
 
-    const gridArray = []
-
-    values.forEach((value) => {
-      const rowObject = {
-        season: value[0],
-        dayName: value[1],
-        mealtime: value[2],
-        meals: [value[3], value[4], value[5], value[6]] // Infinite iterator should  take care of week 5
-      }
-      gridArray.push(rowObject)
-    })
-    logObjectArray(gridArray, 'gridArray')
-
-    logIt('getGridArray finished')
+    logIt('SeasonalMenus.getGridArray finished')
     return gridArray
   }
 
@@ -1139,25 +1092,15 @@ class SeasonalMenus {
   }
 
   getSeasonMenu(season) {
-    logIt('getSeasonMenu started')
+    logIt('SeasonalMenus.getSeasonMenu started')
     logIt(`season: ${season}`)
     if (!this.gridArray) {
       this.gridArray = this.getGridArray()
     }
-    logObjectArray(this.gridArray, 'this.gridArray')
-
     const seasonMenu = this.gridArray.filter(element => {
-      logIt(`gridArray.filter`)
-      logObject(element, 'element')
-
-      const match = (element.season === season)
-      logIt(match, 'match')
-
-      return match
+      return (element.season === season);
     })
-
-    logObjectArray(seasonMenu, 'seasonMenu')
-    logIt('getSeasonMenu finished')
+    logIt('SeasonalMenus.getSeasonMenu finished')
 
     return seasonMenu
   }
@@ -1173,20 +1116,17 @@ class SeasonalMenus {
   getUniqueMeals() {
     // Ignore first row. 4 seasons * 28 = 112. 4 meals * 7 = 28
     const grid = this.sheet.getRange("D2:G113").getValues();
-    //logArray(grid, 'grid')
 
     const unique = new Set()
 
     grid.forEach(gridRow => {
       let col = 0;
       while (typeof gridRow[col] !== "undefined" && gridRow[col].length) {
-        unique.add(gridRow[col])
-        col++;
+        unique.add(gridRow[col++]);
       }
     });
-    //logSet(unique, 'unique')
 
-    return unique
+    return unique;
   }
 }
 
@@ -1344,12 +1284,20 @@ function checkLinks() {
 
 function checkRecipes() {
   const spreadsheet = new MenuPlannerSpreadsheet()
-    logItLevel++
-    logObject(spreadsheet, 'spreadsheet')
-    logItLevel--
-  let meals = new Meals(spreadsheet);
-  let recipes = new Recipes(spreadsheet);
-  recipes.checkRecipes(meals.getAllMeals().map(mealRow => mealRow[0]));
+  logObject(spreadsheet, 'spreadsheet')
+
+  const meals = new Meals(spreadsheet);
+  const allMeals = meals.getAllMeals();
+  const mealNames = allMeals.map(mealRow => mealRow[0]);
+  logArray(mealNames, 'mealNames')
+
+  const recipes = new Recipes(spreadsheet);
+  const missingRecipes = recipes.getMissingRecipes(mealNames);
+
+  if (missingRecipes.length > 0) {
+    const errorMessage = `Recipes: No recipe found for ${missingRecipes.join(", ")}`;
+    throw new Error(errorMessage); // Optionally throw an error if needed
+  }
   logIt('checkLinks checkRecipes')
 }
 
@@ -1452,6 +1400,7 @@ function onOpen() {
 }
 
 function updateDailyMenus() {
+  //logItLevel++;
   const spreadsheet = new MenuPlannerSpreadsheet()
   const seasonalMenus = new SeasonalMenus(spreadsheet)
 
@@ -1462,7 +1411,7 @@ function updateDailyMenus() {
 }
 
 function updateMealsToShopFor() {
-  const spreadsheet = new MenuPlannerSpreadsheet()
+  const spreadsheet = new MenuPlannerSpreadsheet();
   const mealsToShopFor = new MealsToShopFor(spreadsheet);
 
   mealsToShopFor.updateMealsToShopFor();

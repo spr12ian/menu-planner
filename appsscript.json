@@ -1,0 +1,15 @@
+{
+  "timeZone": "Europe/London",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "isw",
+      "libraryId": "1VaJT8GhfW3oZD9mqV_CEmzk5h92EYGLtSRKRGIDmWIYScU5Ds-Ve8LT-",
+      "version": "0",
+      "developmentMode": true
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": ["https://www.googleapis.com/auth/gmail.send", "https://www.googleapis.com/auth/script.external_request", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/spreadsheets.currentonly"],
+  "urlFetchWhitelist": ["https://www.bbc.co.uk/food/", "https://www.bbcgoodfood.com/", "https://www.food.com/", "https://www.nhs.uk/", "https://www.themediterraneandish.com/"],
+  "runtimeVersion": "V8"
+}

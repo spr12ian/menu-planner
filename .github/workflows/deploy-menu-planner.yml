@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -24,9 +24,6 @@ jobs:
       env:
         CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
       run: echo "$CLASP_TOKEN" > ~/.clasprc.json
-      
-    - name: List files in working directory
-      run: ls -al
 
     - name: Deploy to Google Apps Script
       run: clasp push

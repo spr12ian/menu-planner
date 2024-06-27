@@ -25,5 +25,8 @@ jobs:
         CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
       run: echo "$CLASP_TOKEN" > ~/.clasprc.json
 
+    - name: Check clasp version
+      run: clasp -v
+
     - name: Deploy to Google Apps Script
       run: clasp push

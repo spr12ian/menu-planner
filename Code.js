@@ -3,6 +3,23 @@ class Config {
     this.sheetName = "Config";
     this.spreadsheet = spreadsheet;
     this.sheet = this.spreadsheet.getSheetByName(this.sheetName);
+    
+    if (!this.sheet) {
+      throw new Error(`Sheet "${this.sheetName}" not found`);
+    }
+    
+    this._cacheKeyValues(); // Cache the key-value pairs upon initialization
+  }
+
+  // Cache the key-value pairs to avoid multiple reads from the sheet
+  _cacheKeyValues() {
+    const keyRange = this.sheet.getRange("A2:B");
+    this.keyValues = keyRange.getDisplayValues().reduce((acc, row) => {
+      if (row[0] && row[1]) {
+        acc[row[0]] = row[1];
+      }
+      return acc;
+    }, {});
   }
 
   getSheet() {
@@ -18,24 +35,17 @@ class Config {
   }
 
   getValue(key) {
-    for (const row of this.keyValues) {
-      if (row[0] === key) {
-        return row[1];
-      }
+    if (key in this.keyValues) {
+      return this.keyValues[key];
     }
-
     throw new Error(`Key "${key}" not found in config`);
   }
 
   isEnabledEmailTodaysMenu() {
     return this.getValue("Email today's menu");
   }
-
-  get keyValues() {
-    const keyRange = this.sheet.getRange("Config!A2:B");
-    return keyRange.getDisplayValues();
-  }
 }
+
 
 class DailyMenus {
   constructor(spreadsheet) {
@@ -169,7 +179,7 @@ class DailyMenus {
             }
             prevIndex = nextIndex - 1
           }
-          
+
           const dayName = seasonMenu[prevIndex].dayName
           logIt(`dayName: ${dayName}`)
 
@@ -223,7 +233,7 @@ class DailyMenus {
 
     const { first, iterator: days } = setupDaysIterator(getFirstDateOfYear())
     let day = first
-    
+
     for (let dayIndex = 0; dayIndex < howManyRowsToRefresh; dayIndex++) {
       const dayName = day.dayName // Sunday
 
@@ -314,10 +324,10 @@ class DailyMenus {
     const meals = this.sheet.getRange(`B${rowIndex}:E${rowIndex}`).getValues()[0];
 
     return {
-      Breakfast: meals[1],
-      Lunch: meals[2],
-      Dinner: meals[3],
-      Snacks: meals[4]
+      Breakfast: meals[0],
+      Lunch: meals[1],
+      Dinner: meals[2],
+      Snacks: meals[3]
     };
   }
 
@@ -1258,6 +1268,8 @@ function allSteps() {
 
   emailShoppingList()
 
+  fnOnDateChange();
+
   goToTodaysMenu()
 }
 
@@ -1374,12 +1386,16 @@ function goToTodaysMenu() {
   dailyMenus.goToTodaysMenu();
 }
 
+function fnOnDateChange() {
+  const spreadsheet = getActiveSpreadsheet();
+  const dateChange = new DateChange(spreadsheet);
+  dateChange.executeDateChangeEvents();
+}
+
 // Trigger functions
 
 function onDateChange() {
-  const spreadsheet = getActiveSpreadsheet()
-  const dateChange = new DateChange(spreadsheet);
-  dateChange.executeDateChangeEvents();
+  fnOnDateChange();
 }
 
 function onOpen() {
